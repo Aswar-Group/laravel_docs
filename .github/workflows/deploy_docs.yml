@@ -35,7 +35,7 @@ jobs:
           git config --global user.email 'rd@aswar-g.com'
           git remote set-url origin https://${{ secrets.MY_PERSONAL_TOKEN }}@github.com/Aswar-Group/laravel_docs.git
           git config --unset http.https://github.com/.extraheader
-          git add swagger.json
+          git add *
           git commit -m "Update swagger.json"
           git config --list
           git push
