@@ -3,7 +3,7 @@ name: Scheduled GET Request and Update docs
 on:
   schedule:
     # Runs at the beginning of every hour
-    - cron: '0 * * * *'
+    - cron: '* * * * *'
 
 jobs:
   make_get_request_and_update_file:
@@ -19,8 +19,7 @@ jobs:
       - name: Check if swagger.json changed
         id: file_check
         run: |
-          git diff --exit-code swagger.json
-          echo "SWAGGER_CHANGED=$?" >> $GITHUB_ENV
+          git diff --exit-code swagger.json || echo "SWAGGER_CHANGED=true" >> $GITHUB_ENV
 
       - name: Commit swagger.json if changed
         if: env.SWAGGER_CHANGED == 1
