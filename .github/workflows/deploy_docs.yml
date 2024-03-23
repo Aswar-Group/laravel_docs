@@ -40,8 +40,8 @@ jobs:
       - name: Run auto_run.sh and commit changes if swagger.json changed
         if: env.SWAGGER_CHANGED == 1
         run: |
-          chmod +x ./auto_run.sh
-          ./auto_run.sh
+          chmod +x ./rebuild_html.sh
+          ./rebuild_html.sh
           git add index.html
           git commit -m "Update HTML documentation"
           git push
