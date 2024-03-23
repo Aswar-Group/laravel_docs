@@ -1,0 +1,44 @@
+name: Scheduled GET Request and Update docs
+
+on:
+  schedule:
+    # Runs at the beginning of every hour
+    - cron: '0 * * * *'
+
+jobs:
+  make_get_request_and_update_file:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: GET Request with X-API-Key and Write to swagger.json
+        run: |
+          curl -H "X-API-Key: ${{ secrets.API_KEY }}" "https://api.getpostman.com/collections/${{ secrets.COLLECTION_ID }}" > swagger.json
+
+      - name: Check if swagger.json changed
+        id: file_check
+        run: |
+          git diff --exit-code swagger.json
+          echo "SWAGGER_CHANGED=$?" >> $GITHUB_ENV
+
+      - name: Commit swagger.json if changed
+        if: env.SWAGGER_CHANGED == 1
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add swagger.json
+          git commit -m "Update swagger.json"
+          git push
+
+      - name: Run auto_run.sh and commit changes if swagger.json changed
+        if: env.SWAGGER_CHANGED == 1
+        run: |
+          chmod +x ./auto_run.sh
+          ./auto_run.sh
+          git add index.html
+          git commit -m "Update HTML documentation"
+          git push
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          COLLECTION_ID: ${{ secrets.COLLECTION_ID }}
