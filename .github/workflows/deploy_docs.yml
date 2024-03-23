@@ -15,14 +15,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: GET Request with X-API-Key and Write to swagger.json
+      - name: GET Request with X-API-Key
         run: |
-          curl -H "X-API-Key: ${{ secrets.API_KEY }}" "https://api.getpostman.com/collections/${{ secrets.COLLECTION_ID }}" > swagger.json
+          curl -H "X-API-Key: ${{ secrets.API_KEY }}" "https://api.getpostman.com/collections/${{ secrets.COLLECTION_ID }}" > postman.json
 
-      - name: Check if swagger.json changed
-        id: file_check
+      - name: Generate swagger json and check for Changes
         run: |
-          git diff --exit-code swagger.json || echo "SWAGGER_CHANGED=1" >> $GITHUB_ENV
+          python postman_to_swagger_json.py "postman.json" ${{ secrets.API_KEY }}
+          if [ $? -eq 0 ]; then
+             echo "SWAGGER_CHANGED=1" >> $GITHUB_ENV
+          else
+             echo "SWAGGER_CHANGED=0" >> $GITHUB_ENV
+          fi
 
       - name: Commit swagger.json if changed
         if: env.SWAGGER_CHANGED == 1
