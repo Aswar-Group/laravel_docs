@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - main
-      - master
 
 jobs:
   make_get_request_and_update_file:
@@ -23,16 +22,20 @@ jobs:
       - name: Check if swagger.json changed
         id: file_check
         run: |
-          git diff --exit-code swagger.json || echo "SWAGGER_CHANGED=true" >> $GITHUB_ENV
+          git diff --exit-code swagger.json || echo "SWAGGER_CHANGED=1" >> $GITHUB_ENV
 
       - name: Commit swagger.json if changed
         if: env.SWAGGER_CHANGED == 1
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "GitHub Action"
+          git config --global user.name 'aswar-company'
+          git config --global user.email 'rd@aswar-g.com'
+          git remote set-url origin https://${{ secrets.MY_PERSONAL_TOKEN }}@github.com/Aswar-Group/laravel_docs.git
+          git config --unset http.https://github.com/.extraheader
           git add swagger.json
           git commit -m "Update swagger.json"
+          git config --list
           git push
+          echo "push done"
 
       - name: Run auto_run.sh and commit changes if swagger.json changed
         if: env.SWAGGER_CHANGED == 1
