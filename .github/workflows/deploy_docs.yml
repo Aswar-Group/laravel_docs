@@ -3,7 +3,11 @@ name: Scheduled GET Request and Update docs
 on:
   schedule:
     # Runs at the beginning of every hour
-    - cron: '* * * * *'
+    - cron: '0 * * * *'
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
   make_get_request_and_update_file:
