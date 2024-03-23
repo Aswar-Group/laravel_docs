@@ -34,9 +34,9 @@ args = parser.parse_args()
 try:
     with open(args.postman_file, 'r') as file:
         collection = json.load(file)
-    api_key = json.loads(args.API_KEY)
-except json.JSONDecodeError:
-    print("Error: The collection argument is not a valid JSON string.")
+    api_key = args.API_KEY
+except json.JSONDecodeError as e:
+    print("Error: The collection or api_key argument is not valid.", e)
     exit(1)
 
 collection_json = json.dumps(collection)
